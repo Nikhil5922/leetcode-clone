@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { authModalstate } from '@/atoms/authModalAtom';
 import {useSetRecoilState} from "recoil";
+import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { auth } from '@/firebase/firebase';
 
 type signupProps = {
     
@@ -11,15 +13,28 @@ const signup:React.FC<signupProps> = () => {
     const handleClick=()=>{
         setAuthModalstate((prev)=> ({...prev,type:"Login"}));
     }
-    
+    const [inputs,setinputs]=useState({email:'', Name:'',password:''})
+    const [
+        createUserWithEmailAndPassword,
+        user,
+        loading,
+        error,
+      ] = useCreateUserWithEmailAndPassword(auth);
+    const handleChangeInput=(e:React.ChangeEvent<HTMLInputElement>)=>{
+        setinputs((prev)=>({...prev ,[e.target.name]: e.target.value}));
+    }
+    const handleRegister=(e:React.FormEvent<HTMLFormElement>)=>{
+        e.preventDefault();
+    }
     return (
-        <form className='space-y-6 px-6 pb-4' >
+        <form className='space-y-6 px-6 pb-4'  onSubmit={handleRegister}>
     <h3 className='text-xl font-medium text-white'>Register to Leetclone</h3>
     <div>
         <label htmlFor='email' className='text-sm font-medium block mb-2 text-gray-300'>
             Email
         </label>
         <input
+        onChange={handleChangeInput}
            
             type='email'
             name='email'
