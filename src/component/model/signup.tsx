@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
 import { authModalstate } from '@/atoms/authModalAtom';
+import { auth} from '@/firebase/firebase';
+import React, { useState } from 'react';
 import {useSetRecoilState} from "recoil";
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
-import { auth } from '@/firebase/firebase';
-
 type signupProps = {
     
 };
@@ -13,7 +12,7 @@ const signup:React.FC<signupProps> = () => {
     const handleClick=()=>{
         setAuthModalstate((prev)=> ({...prev,type:"Login"}));
     }
-    const [inputs,setinputs]=useState({email:'', Name:'',password:''})
+    const [inputs,setinputs]=useState({email:'', Name:'',password:''});
     const [
         createUserWithEmailAndPassword,
         user,
@@ -22,8 +21,8 @@ const signup:React.FC<signupProps> = () => {
       ] = useCreateUserWithEmailAndPassword(auth);
     const handleChangeInput=(e:React.ChangeEvent<HTMLInputElement>)=>{
         setinputs((prev)=>({...prev ,[e.target.name]: e.target.value}));
-    }
-    const handleRegister=(e:React.FormEvent<HTMLFormElement>)=>{
+    };
+    const handleRegister=async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
     }
     return (
