@@ -1,8 +1,9 @@
 import { authModalstate } from '@/atoms/authModalAtom';
-import { auth} from '@/firebase/firebase';
-import React, { useState } from 'react';
+import {auth} from '@/firebase/firebase';
+import React, { useState,useEffect } from 'react';
 import {useSetRecoilState} from "recoil";
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
+import { useRouter } from "next/router";
 type signupProps = {
     
 };
@@ -13,18 +14,29 @@ const signup:React.FC<signupProps> = () => {
         setAuthModalstate((prev)=> ({...prev,type:"Login"}));
     }
     const [inputs,setinputs]=useState({email:'', Name:'',password:''});
-    const [
-        createUserWithEmailAndPassword,
-        user,
-        loading,
-        error,
-      ] = useCreateUserWithEmailAndPassword(auth);
+    const router=useRouter();
+    const [createUserWithEmailAndPassword,user,loading,error,] = useCreateUserWithEmailAndPassword(auth);
     const handleChangeInput=(e:React.ChangeEvent<HTMLInputElement>)=>{
         setinputs((prev)=>({...prev ,[e.target.name]: e.target.value}));
     };
     const handleRegister=async(e:React.FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
-    }
+        if(!inputs.email || !inputs.password || !inputs.Name) return alert("Please fill all fields");
+        try{
+            const newUser=await createUserWithEmailAndPassword(inputs.email, inputs.password);      
+            if(!newUser)
+            return;
+        router.push('/')  
+        }
+        catch(error:any){
+            alert(error.message);
+        }
+    };
+    useEffect(() => {
+        if(error)
+        alert(error.message);
+    },[error]);
+    
     return (
         <form className='space-y-6 px-6 pb-4'  onSubmit={handleRegister}>
     <h3 className='text-xl font-medium text-white'>Register to Leetclone</h3>
@@ -84,7 +96,7 @@ const signup:React.FC<signupProps> = () => {
         text-sm px-5 py-2.5 text-center bg-brand-orange hover:bg-brand-orange-s
     '
     >
-       Register
+       {loading ? "Registering...":"Register"}
     </button>
     <div className='text-sm font-medium text-gray-300'>
         Already have an account Registered?{" "}
@@ -95,6 +107,5 @@ const signup:React.FC<signupProps> = () => {
 
     </form> 
     );
-
 }
 export default signup;
